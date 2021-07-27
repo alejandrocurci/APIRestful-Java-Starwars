@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 public class StarWarsController {
 
@@ -15,8 +17,8 @@ public class StarWarsController {
     private CharacterService service;
 
     @PostMapping("/find")
-    public ResponseEntity filter(@RequestParam String name) throws CharacterException {
-        return new ResponseEntity(service.findCharacters(name), HttpStatus.OK);
+    public ResponseEntity filter(@RequestParam Map<String, String> params) throws CharacterException {
+        return new ResponseEntity(service.findCharacters(params), HttpStatus.OK);
     }
 
     @ExceptionHandler(CharacterException.class)

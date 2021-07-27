@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CharacterServiceImpl implements CharacterService {
@@ -16,19 +17,33 @@ public class CharacterServiceImpl implements CharacterService {
     private CharacterRepository repository;
 
     @Override
-    public List<CharacterDTO> findCharacters(String name) throws CharacterException {
+    public List<CharacterDTO> findCharacters(Map<String, String> params) throws CharacterException {
         List<CharacterDTO> characters = repository.loadCharacters();
-        List<CharacterDTO> charactersResult = new ArrayList<>();
-        if (!characters.isEmpty()) {
-            for (CharacterDTO p : characters) {
-                if (p.getName().contains(name)) {
-                    charactersResult.add(p);
-                }
-            }
+        if (params.containsKey("name")) {
+            filterByName(characters, params.get("name"));
         }
-        if (charactersResult.isEmpty()) {
+        if (params.containsKey("homeworld")) {
+            filterByHomeworld(characters, params.get("homeworld"));
+        }
+        if (params.containsKey("species")) {
+            filterBySpecies(characters, params.get("species"));
+        }
+        if (characters.isEmpty()) {
             throw new CharacterException("No characters were found");
         }
-        return charactersResult;
+        return characters;
     }
+
+    public void filterByName(List<CharacterDTO> characters, String name) {
+        characters.removeIf(c -> !c.getName().contains(name));
+    }
+
+    public void filterByHomeworld(List<CharacterDTO> characters, String homeworld) {
+        characters.removeIf(c -> !c.getHomeworld().contains(homeworld));
+    }
+
+    public void filterBySpecies(List<CharacterDTO> characters, String species) {
+        characters.removeIf(c -> !c.getSpecies().contains(species));
+    }
+
 }
